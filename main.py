@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker , Session
 from Schemas import MovieCreate , MovieResponse
 from ai_service import generate_movie_summary
+from typing import Optional
 DATABASE_URL = "sqlite:///./movies_V2.db"
 engine = create_engine(DATABASE_URL , connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit = False , autoflush= False , bind= engine)
@@ -55,8 +56,12 @@ def create_movie(movie: MovieCreate , db: Session = Depends(get_db)):
     return new_movie
 
 @app.get("/movies" , response_model = list[MovieResponse])
-def get_movies(db: Session = Depends(get_db)):
-    return db.query(MovieModel).all()
+def get_movies(tag: Optional[str],db: Session = Depends(get_db)):
+    if tag:
+        movies = db.query(MovieModel).filter(MovieModel.tags.contains(tag)).all()
+    else:
+        movies = db.query(MovieModel).all()
+    return movies
 
 @app.get("/movies/{movie_id}" , response_model = MovieResponse)
 def get_movies(movie_id : int , db:Session = Depends(get_db)):
