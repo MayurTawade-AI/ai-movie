@@ -65,7 +65,7 @@ def create_movie(movie: MovieCreate , db: Session = Depends(get_db)):
     return new_movie
 
 @app.get("/movies" , response_model = list[MovieResponse])
-def get_movies(tag: Optional[str],db: Session = Depends(get_db)):
+def get_movies(tag: Optional[str] = None,db: Session = Depends(get_db)):
     if tag:
         movies = db.query(MovieModel).filter(MovieModel.tags.contains(tag)).all()
     else:
