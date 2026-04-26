@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Movie Explorer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #movie-list { display: flex; flex-direction: column; gap: 15px; }
+
+        /* This is how our movie cards will look */
+        .movie-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tags { color: #007bff; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎬 AI Movie Explorer</h1>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by #Tag (e.g., #Action, #Drama)...">
+        <button onclick="searchMovies()">Search</button>
+    </div>
+
+    <div id="movie-list">
+        <p>Loading movies from the cloud...</p>
+    </div>
+</div>
+<script>
+    async function searchMovies(){
+    const searchTag = document.getElementById("searchInput").value;
+    const listDiv = document.getElementById("movie-list");
+
+    listDiv.innerHTML = "<p>Searching the database...</p>";
+
+    try{
+        let url = "https://ao-movie-api.onrender.com/movies";
+        if (searchTag) {
+            url =url + "?tag=" + encodeURIComponent(searchTag);
+
+        }
+        const response = await fetch(url);
+        const movies = await response.json();
+
+        listDiv.innerHTML = "";
+
+        movies.forEach(movie => {
+            const cardHtml = `
+            <div class = "movie-card">
+                <h2>${movie.title} (${movie.year})</h2>
+                <p><strong>Summary:</strong> ${movie.summary}</p>
+                <div class="tags">${movie.tags}</div>
+            </div>
+            `;    
+        });
+    }catch (error){
+        listDiv.innerHTML ="<p style='color:red'>Error: Could not connect to API.</p>";
+
+    }
+}
+searchMovies();
+</script>
+</body>
+</html>
