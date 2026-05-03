@@ -49,15 +49,20 @@
         const movies = await response.json();
 
         listDiv.innerHTML = "";
-
+        if (movies.length == 0){
+            listDiv.innerHTML = "<p> No movies found. Try a different tags<p>"
+            return;    
+        }
         movies.forEach(movie => {
             const cardHtml = `
             <div class = "movie-card">
                 <h2>${movie.title} (${movie.year})</h2>
+                <p><strong>Director:</strong> ${movie.Director}</p>
                 <p><strong>Summary:</strong> ${movie.summary}</p>
                 <div class="tags">${movie.tags}</div>
             </div>
-            `;    
+            `;  
+            listDiv.innerHTML += cardHtml;  
         });
     }catch (error){
         listDiv.innerHTML ="<p style='color:red'>Error: Could not connect to API.</p>";
